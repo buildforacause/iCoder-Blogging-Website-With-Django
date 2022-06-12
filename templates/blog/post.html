@@ -1,0 +1,140 @@
+{% extends 'basic.html' %}
+
+{% block title %} Welcome To Blogs {% endblock %}
+
+{% block body %}
+{% load humanize %}
+{% if post %}
+<div class="container my-5">
+<div class="row g-5">
+    <div class="col-md-8">
+      <article class="blog-post">
+        <h2 class="blog-post-title mb-1">{{ post.title }}</h2>
+          <span class="text-muted" style="float: right!important;"> {{ post.views }} views</span>
+          <p class="blog-post-meta"><span class="text-muted" style="font-size: 12.5px;">{{post.timeStamp | naturaltime }}</span> by
+              <a href="/blog/postsby_{{ post.author }}/">{{ post.author }}</a></p>
+                <p>{{ post.content | safe }}</p>
+      </article>
+        {% if user.username == post.author %}
+        <a href="/blog/editpost/{{ post.slug }}/" style="float:right!important;" class="btn blogbtn px-lg-4">Edit BlogPost</a>
+        {% endif %}
+        <br><br><hr>
+        <p><strong>Comments</strong><span class="text-muted"> ({{ comments| length }})</span></p>
+
+     {% if user.is_authenticated %}
+       <form class="row g-3 my-3" action="/blog/postComment/" method="post">
+      {% csrf_token %}
+         <div class="col-md-10">
+          <input class="form-control" type="text" name="content" placeholder="Enter comment here" required>
+         </div>
+        <input type="hidden" name="postId" value="{{ post.id }}" >
+         <div class="col-md-2">
+          <input class="form-control blogbtn col-md-2" type="submit" value="Submit">
+         </div>
+      </form>
+      {% endif %}
+
+
+      {% for comment in comments %}
+      <div class="card-body my-3">
+            <div class="d-flex flex-start">
+              <img class="rounded-circle shadow-1-strong me-3" src="https://i1.sndcdn.com/artworks-000546216060-999gef-t500x500.jpg" alt="avatar" width="40" height="40">
+              <div class="w-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <p class="text-primary mb-0 w-100">
+                      <b>{{ comment.user.username }} </b><span class="text-muted" style="font-size: 12.5px;">{{ comment.timeStamp | naturaltime }}</span><br>
+                    <span class="text-dark">{{ comment.content }}</span>
+                  </p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <p class="small mb-0" style="color: #aaa;">
+                        <!-- Reply button logic -->
+                        <a class="link-grey" data-bs-toggle="collapse" href="#collapse{{ comment.id }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                            Reply
+                        </a>
+                        {% if user.is_authenticated and user.id == comment.user.id %}
+                        <a class="link-grey mx-2" data-bs-toggle="collapse" href="#edit{{ comment.id }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                            Edit
+                        </a>
+                        {% endif %}
+                    </p>
+                </div>
+                  <!-- edit comment -->
+
+                  <div class="collapse my-2" id="edit{{ comment.id }}">
+                   <form class="row g-3 my-1" action="/blog/editComment/{{ comment.id }}/" method="post">
+                      {% csrf_token %}
+                         <div class="col-md-10">
+                          <input class="form-control" type="text" name="content" value="{{ comment.content }}" required>
+                         </div>
+                         <div class="col-md-2">
+                          <input id="editsubmit" class="form-control blogbtn col-md-2" type="submit" value="Edit">
+                         </div>
+                      </form>
+                </div>
+
+
+                <div class="collapse my-2" id="collapse{{ comment.id }}">
+                    {% if user.is_authenticated %}
+                   <form class="row g-3 my-1" action="/blog/postComment/" method="post">
+                      {% csrf_token %}
+                         <div class="col-md-10">
+                          <input class="form-control" type="text" name="content" placeholder="Enter reply here" required>
+                         </div>
+                        <input type="hidden" name="commentId" value="{{ comment.id }}" >
+                        <input type="hidden" name="postId" value="{{ post.id }}" >
+                         <div class="col-md-2">
+                          <input class="form-control blogbtn col-md-2" type="submit" value="Submit">
+                         </div>
+                      </form>
+                    {% else %}
+                    <p class="text-muted">Please login to reply or comment!</p>
+                    {% endif %}
+                </div>
+
+                  {% for reply in replies %}
+                  {% if comment.id == reply.parent.id %}
+                  <div class="d-flex flex-start my-2">
+                  <img class="rounded-circle shadow-1-strong me-3" src="https://i1.sndcdn.com/artworks-000546216060-999gef-t500x500.jpg" alt="user_pic" width="40" height="40">
+                  <div class="w-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <p class="text-primary mb-0 w-100">
+                          <b>{{ reply.user.username }} </b><span class="text-muted" style="font-size: 12.5px;">{{ reply.timeStamp | naturaltime }}</span><br>
+                        <span class="text-dark">{{ reply.content }}</span>
+                        </p>
+                    </div>
+                  </div>
+                  </div>
+                  {% endif %}
+                  {% endfor %}
+
+
+              </div>
+            </div>
+      </div>
+      {% endfor %}
+    </div>
+
+
+    <div class="col-md-4">
+      <div class="position-sticky" style="top: 2rem;">
+        <div class="p-4 mb-3 rounded" style="background-color: #64FBFE;">
+          <h4 class="fst-italic">About</h4>
+          <p class="mb-0">iCoder is an open source community
+          to help the coders gain their network through their coding blogs
+          and researches!</p>
+        </div>
+
+        <div class="p-4 my-3 rounded" style="background-color: #64FBFE;">
+          <h4 class="fst-italic">Contact</h4>
+          <ol class="list-unstyled">
+            <li><a href="https://github.com/buildforacause" style="text-decoration: none;">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/harmit-saini-09b818211/" style="text-decoration: none;">Linked In</a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+    </div>
+{% endif %}
+{% endblock %}

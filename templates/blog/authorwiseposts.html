@@ -1,26 +1,21 @@
 {% extends 'basic.html' %}
 
-{% block title %} Welcome To Blogs {% endblock %}
+{% block title %} Posts by {{ author }} {% endblock %}
 {% block blogactive %} active {% endblock %}
 {% block body %}
 {% load humanize %}
 <div class="container" id="blogs">
     <h3 class="my-4"></h3>
     <div class="row mb-2">
-        <div>
-            {% if user.is_authenticated %}
-            <a href="/blog/newpost/" style="float: right!important;" class="btn blogbtn">+ Create new</a>
-            {% endif %}
-            <h3 class="pb-4 mb-4 fst-italic border-bottom">Coding Articles in iCoder:</h3>
-        </div>
+       <h5 class="pb-4 mb-4 fst-italic border-bottom">Coding Articles by {{ author }}:</h5>
 
 {% for post in posts %}
     <div class="col-md-6">
       <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col p-4 d-flex flex-column position-static">
           <strong class="d-inline-block mb-2 text-success">Coding</strong>
-          <h3 class="mb-0">{{post.title}}</h3>
-          <div class="mb-1 text-muted">{{post.timeStamp | naturaltime }} by <a href="#">{{ post.author }}</a>
+          <h3 class="mb-0">{{ post.title }}</h3>
+          <div class="mb-1 text-muted">{{ post.timeStamp | naturaltime }} by <a href="#">{{ post.author }}</a>
           <span class="text-muted" style="float: right!important;"> {{ post.views }} views</span></div>
             <div class="preview"><p class="mb-auto">{{ post.content| slice:"0:150"|striptags  }}...</p></div>
           <a href="/blog/{{post.slug}}/" class="stretched-link">Continue reading</a>

@@ -1,0 +1,37 @@
+{% extends 'basic.html' %}
+
+{% block title %} Edit BlogPost {% endblock %}
+{% block blogactive %} active {% endblock %}
+{% block body %}
+{% if user.is_authenticated %}
+<div class="container my-3">
+    <h3 class="text-center">Edit Your BlogPost!</h3>
+<form class="row g-3 needs-validation" method="post" action="/blog/editpost/{{ post.slug }}/" novalidate>
+    {% csrf_token %}
+
+  <div class="col-md-12">
+    <label for="title" class="form-label">Blog Title</label>
+    <input value="{{ post.title }}" placeholder="Write the title of your Blog!" type="text" name="title" class="form-control" id="title" required>
+      <div class="invalid-feedback">
+            Please enter a title for your blog.
+      </div>
+  </div>
+
+  <div class="col-md-12">
+  <label for="content" class="form-label">Write your BlogPost here!</label>
+  <textarea placeholder="Content should not be less than 500 words!" id="content" name="content" class="form-control" rows="5" required>{{ post.content }}</textarea>
+          <div class="invalid-feedback">
+                Please enter content for your blog.
+          </div>
+</div>
+
+  <div class="col-12 my-4">
+    <button type="submit" class="btn btn-primary blogbtn">Save Changes</button>
+  </div>
+
+</form>
+</div>
+{% else %}
+<h3>Restricted access! Login to start editing your BlogPosts!</h3>
+{% endif %}
+{% endblock %}
