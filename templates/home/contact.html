@@ -1,0 +1,40 @@
+{% extends 'basic.html' %}
+
+{% block title %} Contact Us {% endblock %}
+{% block contactactive %} active {% endblock %}
+{% block body %}
+<div class="container my-3">
+    <h3 class="text-center">Contact Us</h3>
+<form class="row g-3 needs-validation" method="post" action="/contact/" novalidate>
+    {% csrf_token %}
+  <div class="col-md-12">
+    <label for="name" class="form-label">Name</label>
+    <input type="text" name="name" class="form-control" id="name" required>
+          <div class="invalid-feedback">
+                Please enter a Name.
+              </div>
+  </div>
+  <div class="col-md-12">
+    <label for="email" class="form-label">Email</label>
+    <input name="email" type="email" class="form-control" id="email" required>
+          <div class="invalid-feedback">
+                Please enter a valid email.
+              </div>
+  </div>
+  <div class="col-md-12">
+    <label for="phone" class="form-label">Phone Number <span class="text-muted">(Optional)</span></label>
+    <input type="number" class="form-control" id="phone" name="phone">
+  </div>
+  <div class="col-md-12">
+  <label for="desc" class="form-label">Describe your issue</label>
+  <textarea id="desc" name="desc" class="form-control" rows="4" required></textarea>
+          <div class="invalid-feedback">
+                Please enter your issue.
+              </div>
+</div>
+  <div class="col-12 my-4">
+    <button type="submit" class="btn btn-primary blogbtn">Submit</button>
+  </div>
+</form>
+</div>
+{% endblock %}
