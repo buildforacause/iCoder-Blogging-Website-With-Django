@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'home.apps.HomeConfig',
     'blog.apps.BlogConfig',
-    'ckeditor'
+    'ckeditor',
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -130,4 +132,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
+}
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'width': '100%'
+    },
 }
