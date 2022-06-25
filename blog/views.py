@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import BlogPost, Comment
 from django.contrib import messages
+from .forms import BlogPostForm
 from django.http import HttpResponseRedirect
 from datetime import datetime, timezone
 # Create your views here.
@@ -50,20 +51,18 @@ def editComment(request, cid):
 
 
 def createPost(request):
+    form = BlogPostForm()
     if request.method == "POST":
-        title = request.POST.get("title", "")
-        author = request.POST.get("author", "")
-        content = request.POST.get("content", "")
-        slug = "-".join(title.split(" "))
-        new_post = BlogPost(title=title,
-                            author=author,
-                            slug=slug,
-                            content=content,
-                            timeStamp=datetime.now(timezone.utc))
-        new_post.save()
-        messages.success(request, "Congratulations! Your new Blog has been published!!")
-        return redirect("/blog/")
-    return render(request, "blog/createpost.html", {'user': request.user})
+        form = BlogPostForm(request.POST)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.author = request.user.username
+            new_post.slug = "-".join(new_post.title.split(" "))
+            new_post.timeStamp = datetime.now(timezone.utc)
+            new_post.save()
+            messages.success(request, "Congratulations! Your new Blog has been published!!")
+            return redirect("/blog/")
+    return render(request, "blog/createpost.html", {'user': request.user, 'form': form})
 
 
 def filterAuthor(request, author):
@@ -73,9 +72,11 @@ def filterAuthor(request, author):
 
 def editPost(request, slug):
     post = BlogPost.objects.filter(slug=slug).first()
+    form = BlogPostForm(instance=post)
     if request.method == "POST":
-        post.title = request.POST.get("title", "")
-        post.content = request.POST.get("content", "")
-        post.save()
+        form = BlogPostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "You have successfully edited your BlogPost!")
         return redirect(f"/blog/{post.slug}")
-    return render(request, "blog/editblogpost.html", {'post': post})
+    return render(request, "blog/editblogpost.html", {'post': post, 'form': form})
